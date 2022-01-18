@@ -1,0 +1,79 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Variables
+OPEN5GS_IPv4_ADDR = "192.168.33.10"
+UERANSIM_IPv4_ADDR = "192.168.33.11"
+TAC = "2"
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+# Common configs for both VMs are listed here
+config.vm.box = "bento/ubuntu-18.04"
+config.vm.box_version = "202112.19.0"
+config.vm.box_check_update = false
+config.vm.synced_folder ".", "/vagrant", disabled: true
+
+
+  # VM #1: OPEN5GS 5G core network (All-in-one)
+  config.vm.define "open5gs" do |open5gs|
+    open5gs.vm.network "private_network", ip: OPEN5GS_IPv4_ADDR
+    # open5gs.vm.network "public_network"
+
+    # forward port for guest tcp/3000 (Open5GS WebUI) to host 3030
+    open5gs.vm.network "forwarded_port", guest: 3000, host: 3030 
+    
+    open5gs.vm.provider "virtualbox" do |vb|
+     # Customize the amount of cpu & memory on the VM:
+     vb.memory = "4096"
+     vb.cpus = "2"
+    end
+
+    # Open5gs VM bootstrap provisioning with a shell script.
+    open5gs.vm.provision "shell" do |s|
+      s.path   = "bootstrap-open5gs.sh"
+      s.args   = [OPEN5GS_IPv4_ADDR, TAC]
+    end
+    
+    # Open5gs VM provisioner for every up/reload
+    open5gs.vm.provision "shell", run: "always"  do |s|
+      s.path   = "always-open5gs.sh"
+      s.args   = []
+    end
+
+  end
+
+ # VM#2: UERANSIM as our UE & RAN (gNB) Simulator
+ config.vm.define "ueransim" do |ueransim|
+    ueransim.vm.network "private_network", ip: UERANSIM_IPv4_ADDR
+
+    ueransim.vm.provider "virtualbox" do |vb|
+     # Customize the amount of cpu & memory on the VM:
+     vb.memory = "2048"
+     vb.cpus = "2"
+    end
+
+    #Enable provisioning with a shell script.
+    ueransim.vm.provision "shell" do |s|
+      s.path   = "bootstrap-ueransim.sh"
+      s.args   = [UERANSIM_IPv4_ADDR, OPEN5GS_IPv4_ADDR, TAC]
+    end
+
+    # UERANSIM VM provisioned for every up/reload
+    ueransim.vm.provision "shell", run: "always"  do |s|
+      s.path   = "always-ueransim.sh"
+      s.args   = []
+    end
+
+  end
+
+end
+
+
