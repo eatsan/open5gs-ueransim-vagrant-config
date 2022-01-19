@@ -38,13 +38,13 @@ config.vm.synced_folder ".", "/vagrant", disabled: true
 
     # Open5gs VM bootstrap provisioning with a shell script.
     open5gs.vm.provision "shell" do |s|
-      s.path   = "bootstrap-open5gs.sh"
+      s.path   = "shell-provisioners/bootstrap-open5gs.sh"
       s.args   = [OPEN5GS_IPv4_ADDR, TAC]
     end
     
     # Open5gs VM provisioner for every up/reload
     open5gs.vm.provision "shell", run: "always"  do |s|
-      s.path   = "always-open5gs.sh"
+      s.path   = "shell-provisioners/always-open5gs.sh"
       s.args   = []
     end
 
@@ -62,13 +62,13 @@ config.vm.synced_folder ".", "/vagrant", disabled: true
 
     #Enable provisioning with a shell script.
     ueransim.vm.provision "shell" do |s|
-      s.path   = "bootstrap-ueransim.sh"
+      s.path   = "shell-provisioners/bootstrap-ueransim.sh"
       s.args   = [UERANSIM_IPv4_ADDR, OPEN5GS_IPv4_ADDR, TAC]
     end
 
     # UERANSIM VM provisioned for every up/reload
     ueransim.vm.provision "shell", run: "always"  do |s|
-      s.path   = "always-ueransim.sh"
+      s.path   = "shell-provisioners/always-ueransim.sh"
       s.args   = []
     end
 
