@@ -8,6 +8,6 @@ sysctl -w net.ipv6.conf.all.forwarding=1
 iptables -t nat -A POSTROUTING -s 10.45.0.0/16 ! -o ogstun -j MASQUERADE
 ip6tables -t nat -A POSTROUTING -s 2001:db8:cafe::/48 ! -o ogstun -j MASQUERADE
 
-echo "---- Restart UPFD & SMFD in case vagrant network configuration triggered SIGTERM on them -----"
+echo "---- Restart UPFD & SMFD in case vagrant network configuration triggered SIGTERM -----"
 systemctl restart open5gs-upfd
 systemctl restart open5gs-smfd

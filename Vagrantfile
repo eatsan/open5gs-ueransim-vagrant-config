@@ -2,8 +2,8 @@
 # vi: set ft=ruby :
 
 # Variables
-OPEN5GS_IPv4_ADDR = "192.168.33.10"
-UERANSIM_IPv4_ADDR = "192.168.33.11"
+OPEN5GS_IPv4_ADDR = "192.168.56.10"
+UERANSIM_IPv4_ADDR = "192.168.56.11"
 TAC = "2"
 
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
@@ -57,7 +57,7 @@ config.vm.synced_folder ".", "/vagrant", disabled: true
     ueransim.vm.provider "virtualbox" do |vb|
      # Customize the amount of cpu & memory on the VM:
      vb.memory = "2048"
-     vb.cpus = "2"
+     vb.cpus = "1"
     end
 
     #Enable provisioning with a shell script.

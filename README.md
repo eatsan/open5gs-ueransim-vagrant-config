@@ -6,7 +6,7 @@ This repository provides a simple Vagrantfile and the required provisioning shel
 - Open5GS is an open-source implementation of 5G Core and Evolved Packet Core (EPC).  Open5GS's source code can be accessed [here](https://github.com/open5gs/open5gs).
 - UERANSIM is an open-source  5G UE and RAN (gNodeB) implementation. It can be considered as a 5G user equipment and a base station emulation.  You can access its source code [here](https://github.com/aligungr/UERANSIM).
 
-Using the Vagrantfile provided in this repository, you can create two seperate VirtualBox VMs (one for Open5GS and another one UERANSIM) that will be connected to each other over a VirtualBox host-only private network (CIDR *192.168.33.0/24*). Besides the creation of the required VMs, vagrant will also provision each VM with the required configuration changes described in the [Open5GS](https://open5gs.org/open5gs/docs/guide/01-quickstart/) &amp; [UERANSIM](https://github.com/aligungr/UERANSIM/wiki/Configuration) documentation. Once your VMs are created & booted after the `vagrant up`, you will have a ready UERANSIM gNB running in the ueransim VM already connected to the Open5GS AMF. 
+Using the Vagrantfile provided in this repository, you can create two seperate VirtualBox VMs (one for Open5GS and another one UERANSIM) that will be connected to each other over a VirtualBox host-only private network (default CIDR *192.168.56.0/21*). Besides the creation of the required VMs, vagrant will also provision each VM with the required configuration changes described in the [Open5GS](https://open5gs.org/open5gs/docs/guide/01-quickstart/) &amp; [UERANSIM](https://github.com/aligungr/UERANSIM/wiki/Configuration) documentation. Once your VMs are created & booted after the `vagrant up`, you will have a ready UERANSIM gNB running in the ueransim VM already connected to the Open5GS AMF. 
 
 ## Why should I use this repository?
 This repository targets for users who have already followed the Open5GS &amp; UERANSIM tutorials before and would like to **have a quick working Open5GS 5GC setup with UERANSIM gNB/UE**. Consider this as a development environment that can be easily reverted back to a preconfigured state with minimal manual configuration effort from your side. 
@@ -61,8 +61,18 @@ vboxmanage --version
 TODO
 
 
-## Step 2: Deploy via `vagrant up`
-TODO
+## Step 2: Clone & deploy via `vagrant up`
+Clone this repository
+```bash
+git clone https://github.com/eatsan/open5gs-ueransim-vagrant-config.git
+cd open5gs-ueransim-vagrant-config/
+
+# Vagrant will download the necessary vagrant box if it is not present in your system
+vagrant up
+```
+
+After 10 to 15 mins your vagrant deployment 
+
 ## Verify vagrant installation
 TODO
 # Attach UE 
