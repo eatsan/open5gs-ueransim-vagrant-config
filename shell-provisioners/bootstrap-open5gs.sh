@@ -35,7 +35,7 @@ else
   echo "No need to reconfigure AMF config. Skipping..."
 fi
 
-if [ ! -f /etc/open5gs/amf.yaml.bkp ]
+if [ ! -f /etc/open5gs/upf.yaml.bkp ]
 then
  cp /etc/open5gs/upf.yaml /etc/open5gs/upf.yaml.bkp
  ip_private=$1 yq eval '.upf.gtpu[0].addr=env(ip_private)' -i -I4 /etc/open5gs/upf.yaml

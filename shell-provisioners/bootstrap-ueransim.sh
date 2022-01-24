@@ -14,6 +14,8 @@ nc -zvu $2 2152
 
 echo "----- Compile & Install UERANSIM ------"
 apt-get update
+apt-get upgrade
+
 apt-get install -y make gcc g++ libsctp-dev lksctp-tools iproute2 screen
 snap install cmake --classic
 cd /home/vagrant
