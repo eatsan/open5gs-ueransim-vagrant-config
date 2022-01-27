@@ -1,0 +1,36 @@
+---
+- name: Open5gs machine playbook that will be executed every up/reload (always)
+  hosts: open5gs
+  gather_facts: False
+  vars:
+  tasks:
+# Enable IP forwarding on the open5gs machine due to UPF
+    - name: Set ip forwarding on in /proc and in the sysctl file and reload if necessary
+      sysctl:
+        name: "{{ item }}"
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: yes
+      with_items:
+        - net.ipv4.ip_forward
+        - net.ipv6.conf.all.forwarding
+# Add a NAT rule for the UE to have WAN connectivity over SGi/N6
+    - name: Add iptables (ipv4) rules for ue traffic forwarding over N6 interface
+      ansible.builtin.iptables:
+        ip_version: ipv4
+        chain: POSTROUTING
+        table: nat
+        source: 10.45.0.0/16
+        out_interface: ! ogstun
+        jump: MASQUERADE 
+    - name: Add iptables (ipv6) rules for ue traffic forwarding over N6 interface
+      ansible.builtin.iptables:
+        ip_version: ipv6
+        chain: POSTROUTING
+        table: nat
+        source: 2001:db8:cafe::/48
+        out_interface: ! ogstun
+        jump: MASQUERADE 
+
+

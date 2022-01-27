@@ -34,6 +34,8 @@ config.vm.box_check_update = false
     end
 
     # Use :ansible_local as the provisioner of guest 
+
+    # Open5gs machine provisioner that is run only during initial machine provisioning
     open5gs.vm.provision :ansible_local do |ansible|
         # activate privilege escalation for ansible
         ansible.become = true
@@ -44,6 +46,13 @@ config.vm.box_check_update = false
         }
         ansible.verbose = true 
     end
+
+    # Open5gs machine provisioner for every up/reload
+    open5gs.vm.provision :ansible_local, run: "always"  do |ansible|
+        # activate privilege escalation for ansible
+        ansible.become = true
+        ansible.playbook = "ansible-local-provisioners/always.yaml"
+        end
 
   end
 
