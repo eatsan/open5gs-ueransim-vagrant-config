@@ -15,6 +15,18 @@
       with_items:
         - net.ipv4.ip_forward
         - net.ipv6.conf.all.forwarding
+
+# Flush NAT table rules in case 
+    - name: Iptables flush nat table rules
+      ansible.builtin.iptables:
+        ip_version: '{{ item }}'
+        table: nat
+        chain: POSTROUTING
+        flush: yes
+      with_items:
+        - ipv4
+        - ipv6
+
 # Add a NAT rule for the UE to have WAN connectivity over SGi/N6
     - name: Add iptables (ipv4) rules for ue traffic forwarding over N6 interface
       ansible.builtin.iptables:
@@ -22,7 +34,7 @@
         chain: POSTROUTING
         table: nat
         source: 10.45.0.0/16
-        out_interface: ! ogstun
+        out_interface: "!ogstun"
         jump: MASQUERADE 
     - name: Add iptables (ipv6) rules for ue traffic forwarding over N6 interface
       ansible.builtin.iptables:
@@ -30,7 +42,7 @@
         chain: POSTROUTING
         table: nat
         source: 2001:db8:cafe::/48
-        out_interface: ! ogstun
+        out_interface: "!ogstun"
         jump: MASQUERADE 
 
 
