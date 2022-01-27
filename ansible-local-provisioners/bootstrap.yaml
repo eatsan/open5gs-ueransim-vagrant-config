@@ -1,6 +1,9 @@
 ---
 - name: Open5gs bootstrap playbook
   hosts: all
+  vars:
+    yq-version: v4.16.2
+    yq-binary: yq_linux_amd64
   tasks:
   - name: Add open5gs latest repository from PPA and install its signing key on Ubuntu target
     ansible.builtin.apt_repository:
@@ -17,11 +20,27 @@
       pkg:
         - open5gs
         - curl
-  - name: Install nodejs ppa repository configuration
-    shell: curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
+  - name: Download nodejs-14 ppa source setup script
+    get_url:
+      url: https://deb.nodesource.com/setup_14.x
+      dest: /tmp/setup_14.x
+  - name: Install nodejs-14 ppa repository setup script
+    shell: bash /tmp/setup_14.x
   - name: Install the package "nodejs"
     apt:
       name: nodejs
       update_cache: yes
+  - name: Download open5gs-webui install script 
+    get_url:
+      url: https://open5gs.org/open5gs/assets/webui/install
+      dest: /tmp/install-webui
   - name: Install Open5gs WebUI 
-    shell: curl -fsSL https://open5gs.org/open5gs/assets/webui/install | bash -
+    shell: bash /tmp/install-webui
+  - name : Download yq tool for YAML editing
+    get_url:
+      url: https://github.com/mikefarah/yq/releases/download/{{ yq-version }}/{{ yq-binary }}
+      dest: /usr/bin/yq
+      mode: +x
+      checksum: sha1:57e8bbf5342be07a122abb1513c53f3a178240f9
+  - name: Test yq installation
+    shell: yq --version
