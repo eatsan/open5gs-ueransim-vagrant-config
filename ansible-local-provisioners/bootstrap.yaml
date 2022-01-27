@@ -111,10 +111,11 @@
         repo: 'https://github.com/aligungr/UERANSIM'
         dest: /home/vagrant/UERANSIM/
         clone: yes
+        update: no
     - name: Check if nr-gnb file exists
       stat:
         path: /home/vagrant/UERANSIM/build/nr-gnb
-        register: nr_gnb_stat
+      register: nr_gnb_stat
     - name: Compile the UERANSIM repo with make
       make:
         chdir: /home/vagrant/UERANSIM
