@@ -101,9 +101,10 @@
           - lksctp-tools
           - iproute2 
           - screen
-    - name: Install cmake snap with option -- classic
-      community.general.snap:
+    - name: Install cmake snap with option --classic
+      snap:
         name: cmake
+        state: present
         classic: yes
     - name: Clone UERANSIM git repository
       ansible.builtin.git:
