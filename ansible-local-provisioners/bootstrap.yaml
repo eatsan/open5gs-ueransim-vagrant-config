@@ -1,0 +1,27 @@
+---
+- name: Open5gs bootstrap playbook
+  hosts: all
+  tasks:
+  - name: Add open5gs latest repository from PPA and install its signing key on Ubuntu target
+    ansible.builtin.apt_repository:
+      repo: ppa:open5gs/latest
+      update_cache: yes
+  - name: Upgrade the OS (apt-get upgrade)
+    apt:
+      upgrade: yes
+  - name: Install the package "software-properties-common"
+    apt:
+      name: software-properties-common
+  - name: Install the required packages for open5gs setup
+    apt:
+      pkg:
+        - open5gs
+        - curl
+  - name: Install nodejs ppa repository configuration
+    shell: curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
+  - name: Install the package "nodejs"
+    apt:
+      name: nodejs
+      update_cache: yes
+  - name: Install Open5gs WebUI 
+    shell: curl -fsSL https://open5gs.org/open5gs/assets/webui/install | bash -
