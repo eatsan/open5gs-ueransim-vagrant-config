@@ -8,7 +8,7 @@
       update_cache: yes
   - name: Upgrade the OS (apt-get upgrade)
     apt:
-      upgrade: yes
+      upgrade: "yes"
   - name: Install the package "software-properties-common"
     apt:
       name: software-properties-common

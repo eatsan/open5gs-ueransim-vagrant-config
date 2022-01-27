@@ -49,6 +49,7 @@ config.vm.box_check_update = false
         # activate privilege escalation for ansible
         ansible.become = true
         ansible.playbook = "ansible-local-provisioners/bootstrap.yaml"
+        ansible.verbose = true 
     end
 
   end
