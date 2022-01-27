@@ -44,10 +44,11 @@ config.vm.box_check_update = false
      vb.cpus = "2"
     end
 
-    # Use :ansible or :ansible_local to
-    # select the provisioner of your choice
-    open5gs.vm.provision :ansible_local do |ansible_local|
-        ansible_local.playbook = "ansible-local-provisioners/bootstrap.yaml"
+    # Use :ansible_local as the provisioner of guest 
+    open5gs.vm.provision :ansible_local do |ansible|
+        # activate privilege escalation for ansible
+        ansible.become = true
+        ansible.playbook = "ansible-local-provisioners/bootstrap.yaml"
     end
 
   end
