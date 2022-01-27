@@ -121,7 +121,7 @@
         chdir: /home/vagrant/UERANSIM
         params:
           NUM_THREADS: 2
-      when: not nr_gnb_stat.exists
+      when: not nr_gnb_stat.stat.exists
     - name : Download yq tool for YAML editing
       get_url:
         url: https://github.com/mikefarah/yq/releases/download/{{ yq_version|quote }}/{{ yq_binary|quote }}
