@@ -79,7 +79,7 @@
   tasks:
     - name:  Check connectivity to the Open5gs machine
       wait_for:
-        host: {{ open5gs_ipv4_addr|quote }}
+        host: '{{ open5gs_ipv4_addr|quote }}'
         port: 2152
         state: started
         delay: 3
