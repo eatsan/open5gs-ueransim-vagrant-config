@@ -57,6 +57,19 @@ config.vm.box_check_update = false
      vb.cpus = "1"
     end
 
+    # Use :ansible_local as the provisioner of guest 
+    ueransim.vm.provision :ansible_local do |ansible|
+      # activate privilege escalation for ansible
+      ansible.become = true
+      ansible.playbook = "ansible-local-provisioners/bootstrap.yaml"
+      ansible.extra_vars = {
+        open5gs_ipv4_addr: OPEN5GS_IPv4_ADDR,
+        ueransim_gnb_ipv4_addr: UERANSIM_IPv4_ADDR
+        open5gs_tac: TAC
+      }
+      ansible.verbose = true 
+    end
+
   end
 
 end
