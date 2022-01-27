@@ -6,14 +6,6 @@ OPEN5GS_IPv4_ADDR = "192.168.56.10"
 UERANSIM_IPv4_ADDR = "192.168.56.11"
 TAC = "2"
 
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
-
-# Variables
-OPEN5GS_IPv4_ADDR = "192.168.56.10"
-UERANSIM_IPv4_ADDR = "192.168.56.11"
-TAC = "2"
-
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
@@ -46,6 +38,10 @@ config.vm.box_check_update = false
         # activate privilege escalation for ansible
         ansible.become = true
         ansible.playbook = "ansible-local-provisioners/bootstrap.yaml"
+        ansible.extra_vars = {
+          open5gs_ipv4_addr: OPEN5GS_IPv4_ADDR
+          open5gs_tac: TAC
+        }
         ansible.verbose = true 
     end
 
