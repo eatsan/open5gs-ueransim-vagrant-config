@@ -109,7 +109,7 @@
     - name: Clone UERANSIM git repository
       ansible.builtin.git:
         repo: 'https://github.com/aligungr/UERANSIM'
-        dest: /home/vagrant/
+        dest: /home/vagrant/UERANSIM/
         clone: yes
     - name: Check if nr-gnb file exists
       stat:
