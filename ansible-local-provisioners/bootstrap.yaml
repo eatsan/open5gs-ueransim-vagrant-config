@@ -77,14 +77,14 @@
       yq_version: v4.16.2
       yq_binary: yq_linux_amd64
   tasks:
-    - name:  Check connectivity to the Open5gs machine
+    - name:  Wait for connectivity to the open5gs machine
       wait_for:
         host: '{{ open5gs_ipv4_addr|quote }}'
-        port: 2152
+        port: 22
         state: started
         delay: 3
         sleep: 2
-        timeout: 120
+        timeout: 30
     - name: Update repository caches
       apt:
         update_cache: yes
