@@ -17,9 +17,7 @@
       name: software-properties-common
   - name: Install the required packages for open5gs setup
     apt:
-      pkg:
-        - open5gs
-        - curl
+      name: open5gs
   - name: Download nodejs-14 ppa source setup script
     get_url:
       url: https://deb.nodesource.com/setup_14.x
