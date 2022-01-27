@@ -2,8 +2,8 @@
 - name: Open5gs bootstrap playbook
   hosts: all
   vars:
-    yq-version: v4.16.2
-    yq-binary: yq_linux_amd64
+    yq_version: v4.16.2
+    yq_binary: yq_linux_amd64
   tasks:
   - name: Add open5gs latest repository from PPA and install its signing key on Ubuntu target
     ansible.builtin.apt_repository:
@@ -38,7 +38,7 @@
     shell: bash /tmp/install-webui
   - name : Download yq tool for YAML editing
     get_url:
-      url: https://github.com/mikefarah/yq/releases/download/{{ yq-version }}/{{ yq-binary }}
+      url: https://github.com/mikefarah/yq/releases/download/{{ yq_version }}/{{ yq_binary }}
       dest: /usr/bin/yq
       mode: +x
       checksum: sha1:57e8bbf5342be07a122abb1513c53f3a178240f9
