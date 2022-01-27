@@ -34,9 +34,6 @@ config.vm.box_check_update = false
   config.vm.define "open5gs" do |open5gs|
     open5gs.vm.network "private_network", ip: OPEN5GS_IPv4_ADDR
     # open5gs.vm.network "public_network"
-
-    # forward port for guest tcp/3000 (Open5GS WebUI) to host 3030
-    open5gs.vm.network "forwarded_port", guest: 3000, host: 3030 
     
     open5gs.vm.provider "virtualbox" do |vb|
      # Customize the amount of cpu & memory on the VM:
