@@ -64,7 +64,7 @@ config.vm.box_check_update = false
       ansible.playbook = "ansible-local-provisioners/bootstrap.yaml"
       ansible.extra_vars = {
         open5gs_ipv4_addr: OPEN5GS_IPv4_ADDR,
-        ueransim_gnb_ipv4_addr: UERANSIM_IPv4_ADDR
+        ueransim_gnb_ipv4_addr: UERANSIM_IPv4_ADDR,
         open5gs_tac: TAC
       }
       ansible.verbose = true 
