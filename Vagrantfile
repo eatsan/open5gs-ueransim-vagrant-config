@@ -27,7 +27,7 @@ Vagrant.configure("2") do |config|
 config.vm.box = "bento/ubuntu-18.04"
 config.vm.box_version = "202112.19.0"
 config.vm.box_check_update = false
-config.vm.synced_folder ".", "/vagrant", disabled: true
+
 
 
   # VM #1: OPEN5GS 5G core network (All-in-one)
@@ -61,7 +61,7 @@ config.vm.synced_folder ".", "/vagrant", disabled: true
      vb.memory = "2048"
      vb.cpus = "1"
     end
-    
+
   end
 
 end
