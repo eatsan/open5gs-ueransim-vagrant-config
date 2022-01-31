@@ -45,4 +45,11 @@
         out_interface: "!ogstun"
         jump: MASQUERADE 
 
+- name: UERANSIM machine playbook that will be executed every up/reload (always)
+  hosts: ueransim
+  gather_facts: False
+  vars:
+  tasks:
+    - name: Run open5gs gNB in a screen session with the modified config file
+      shell: screen -S ueransim-gnb -dm  /home/vagrant/UERANSIM/build/nr-gnb -c /home/vagrant/UERANSIM/config/open5gs-gnb.yaml
 

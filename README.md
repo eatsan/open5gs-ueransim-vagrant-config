@@ -181,7 +181,7 @@ rtt min/avg/max/mdev = 4.043/11.891/42.353/15.232 ms
  Congratulations, at this point you have a working 5GC SA setup based on Open5GS + UERANSIM. :+1: 
 
 # Changelog
- * Implemented ansible-local as the main vagrant provisioning option (previously shell provisioners).
+ * Implemented ansible-local as the main vagrant provisioning option (previously shell provisioners). You can still use the shell provisioners instead of the default ansible via: ```VAGRANT_VAGRANTFILE=Vagrantfile.shell vagrant up```
 
 # Optional: Vagrantfile walkthrough 
 TODO
