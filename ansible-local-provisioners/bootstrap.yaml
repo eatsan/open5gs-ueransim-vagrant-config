@@ -1,0 +1,152 @@
+---
+- name: Open5gs machine playbook that will be played during the first vagrant up (bootstrap)
+  hosts: open5gs
+  gather_facts: False
+  vars:
+    yq_version: v4.16.2
+    yq_binary: yq_linux_amd64
+  tasks:
+  - name: Add open5gs latest repository from PPA and install its signing key on Ubuntu target
+    ansible.builtin.apt_repository:
+      repo: ppa:open5gs/latest
+      update_cache: yes
+  - name: Upgrade the OS (apt-get upgrade)
+    apt:
+      upgrade: "yes"
+  - name: Install the package "software-properties-common"
+    apt:
+      name: software-properties-common
+  - name: Install the required packages for open5gs setup
+    apt:
+      name: open5gs
+  - name: Download nodejs-14 ppa source setup script
+    get_url:
+      url: https://deb.nodesource.com/setup_14.x
+      dest: /tmp/setup_14.x
+  - name: Install nodejs-14 ppa repository setup script
+    shell: bash /tmp/setup_14.x
+  - name: Install the package "nodejs"
+    apt:
+      name: nodejs
+      update_cache: yes
+  - name: Download open5gs-webui install script 
+    get_url:
+      url: https://open5gs.org/open5gs/assets/webui/install
+      dest: /tmp/install-webui
+  - name: Install Open5gs WebUI 
+    shell: bash /tmp/install-webui
+  - name : Download yq tool for YAML editing
+    get_url:
+      url: https://github.com/mikefarah/yq/releases/download/{{ yq_version|quote }}/{{ yq_binary|quote }}
+      dest: /usr/bin/yq
+      mode: +x
+      checksum: sha1:57e8bbf5342be07a122abb1513c53f3a178240f9
+  - name: Test yq installation
+    shell: yq --version
+    register: yq_exists
+    failed_when: yq_exists.rc != 0
+  - name: Make a backup of the AMF config file before editing
+    ansible.builtin.copy:
+      src: /etc/open5gs/amf.yaml
+      dest: /etc/open5gs/amf.yaml.bkp
+      remote_src: yes
+  - name: Edit open5gs AMF config file with yq
+    shell: ip_private={{ open5gs_ipv4_addr|quote }} tac={{ open5gs_tac|quote }} yq eval 'with(.amf; .ngap[0].addr=env(ip_private) | with(.guami[0].plmn_id; .mcc=001 | .mnc=01) | with(.tai[0]; .plmn_id.mcc=001 | .plmn_id.mnc=01 | .tac=env(tac)) | with(.plmn_support[0].plmn_id; .mcc=001 | .mnc=01) )' -i  -I4 /etc/open5gs/amf.yaml
+  - name: Make a backup of the UPF config file before editing
+    ansible.builtin.copy:
+      src: /etc/open5gs/upf.yaml
+      dest: /etc/open5gs/upf.yaml.bkp
+      remote_src: yes
+  - name: Edit open5gs UPF config file with yq
+    shell: ip_private={{ open5gs_ipv4_addr|quote }} yq eval '.upf.gtpu[0].addr=env(ip_private)' -i -I4 /etc/open5gs/upf.yaml
+  - name: Restart systemd AMFD service after config changes
+    ansible.builtin.systemd:
+      state: restarted
+      name: open5gs-amfd
+  - name: Restart systemd UPFD service after config changes
+    ansible.builtin.systemd:
+      state: restarted
+      name: open5gs-upfd
+  - name: Add a test user in the UDM/UDR database
+    shell: open5gs-dbctl add "001010000000001" "465B5CE8B199B49FAA5F0A2EE238A6BC" "E8ED289DEBA952E4283B54E88E6183CA"
+    
+- name: UERANSIM machine playbook that will be played during the first vagrant up (bootstrap)
+  hosts: ueransim
+  gather_facts: False
+  vars:
+      yq_version: v4.16.2
+      yq_binary: yq_linux_amd64
+  tasks:
+    - name:  Wait for connectivity to the open5gs machine
+      wait_for:
+        host: '{{ open5gs_ipv4_addr|quote }}'
+        port: 22
+        state: started
+        delay: 3
+        sleep: 2
+        timeout: 30
+    - name: Update repository caches
+      apt:
+        update_cache: yes
+    - name: Upgrade the OS (apt-get upgrade)
+      apt:
+        upgrade: "yes"
+    - name: Install the required packages for ueransim machine
+      apt:
+        pkg: 
+          - make 
+          - gcc 
+          - g++ 
+          - libsctp-dev 
+          - lksctp-tools
+          - iproute2 
+          - screen
+    - name: Install cmake snap with option --classic
+      snap:
+        name: cmake
+        state: present
+        classic: yes
+    - name: Clone UERANSIM git repository
+      ansible.builtin.git:
+        repo: 'https://github.com/aligungr/UERANSIM'
+        dest: /home/vagrant/UERANSIM/
+        clone: yes
+        update: no
+    - name: Check if nr-gnb file exists
+      stat:
+        path: /home/vagrant/UERANSIM/build/nr-gnb
+      register: nr_gnb_stat
+    - name: Compile the UERANSIM repo with make
+      make:
+        chdir: /home/vagrant/UERANSIM
+        params:
+          NUM_THREADS: 2
+      when: not nr_gnb_stat.stat.exists
+    - name : Download yq tool for YAML editing
+      get_url:
+        url: https://github.com/mikefarah/yq/releases/download/{{ yq_version|quote }}/{{ yq_binary|quote }}
+        dest: /usr/bin/yq
+        mode: +x
+        checksum: sha1:57e8bbf5342be07a122abb1513c53f3a178240f9
+    - name: Test yq installation
+      shell: yq --version
+      register: yq_exists
+      failed_when: yq_exists.rc != 0
+    - name: Make a backup of the open5gs-gnb config file before editing
+      ansible.builtin.copy:
+        src: /home/vagrant/UERANSIM/config/open5gs-gnb.yaml
+        dest: /home/vagrant/UERANSIM/config/open5gs-gnb.yaml.bkp
+        remote_src: yes
+    - name: Edit open5gs-gnb config file with yq
+      shell:   gNBIP={{ ueransim_gnb_ipv4_addr|quote }} Open5GSIP={{ open5gs_ipv4_addr|quote }} TAC={{ open5gs_tac|quote }}  yq eval -i -I4 ' .mcc="001" | .mnc="01" | .tac=env(TAC) | .linkIp=env(gNBIP) | .ngapIp=env(gNBIP) | .gtpIp=env(gNBIP) | .amfConfigs[0].address=env(Open5GSIP)'  /home/vagrant/UERANSIM/config/open5gs-gnb.yaml
+    - name: Make a backup of the open5gs-ue config file before editing
+      ansible.builtin.copy:
+        src: /home/vagrant/UERANSIM/config/open5gs-ue.yaml
+        dest: /home/vagrant/UERANSIM/config/open5gs-ue.yaml.bkp
+        remote_src: yes
+    - name: Edit open5gs-ue config file with yq
+      shell:   gNBIP={{ ueransim_gnb_ipv4_addr|quote }} yq eval -i -I4 ' .supi="imsi-001010000000001" | .mcc="001" | .mnc="01" | .gnbSearchList[0]=env(gNBIP) ' /home/vagrant/UERANSIM/config/open5gs-ue.yaml
+
+
+
+
